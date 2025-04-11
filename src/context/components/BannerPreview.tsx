@@ -84,7 +84,6 @@ export const BannerPreview: React.FC = () => {
           style={{ maxWidth: '200px' }}
         />
       </div>
-      <ToolBar />
       <div
         ref={bannerRef}
         className="w-[1128px] h-[191px] bg-gradient-to-r p-8 relative"
