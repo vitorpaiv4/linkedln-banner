@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import html2canvas from 'html2canvas';
+import { ToolBar } from '../../components/ToolBar';
 
 export const BannerPreview: React.FC = () => {
   const bannerRef = useRef<HTMLDivElement>(null);
@@ -75,6 +76,15 @@ export const BannerPreview: React.FC = () => {
 
   return (
     <div className="space-y-4">
+      <div className="flex justify-center items-center mb-8">
+        <img 
+          src={require('../bannex-icon.png')} 
+          alt="Bannex Logo" 
+          className="h-16 w-auto object-contain"
+          style={{ maxWidth: '200px' }}
+        />
+      </div>
+      <ToolBar />
       <div
         ref={bannerRef}
         className="w-[1128px] h-[191px] bg-gradient-to-r p-8 relative"
