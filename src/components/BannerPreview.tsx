@@ -80,9 +80,7 @@ export const BannerPreview: React.FC = () => {
   const handleDownload = async () => {
     if (!bannerRef.current) return;
 
-    const canvas = await html2canvas(bannerRef.current, {
-      background: ''
-    });
+    const canvas = await html2canvas(bannerRef.current);
     const link = document.createElement('a');
     link.download = 'linkedin-banner.png';
     link.href = canvas.toDataURL('image/png');
