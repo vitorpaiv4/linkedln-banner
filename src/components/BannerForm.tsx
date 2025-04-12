@@ -1,5 +1,6 @@
 import React from 'react';
 import { useBanner } from '../context/BannerContext';
+import { SkillSelector } from './SkillSelector';
 
 interface BannerFormProps {}
 
@@ -86,62 +87,8 @@ export const BannerForm: React.FC<BannerFormProps> = () => {
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Habilidades (separadas por vírgula)</label>
-        <input
-          type="text"
-          name="skills"
-          value={skills.join(', ')}
-          onChange={handleSkillChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Cor do Gradiente (Início)</label>
-        <input
-          type="color"
-          name="from"
-          value={gradient.from}
-          onChange={handleGradientChange}
-          className="mt-1 block w-full h-10 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Cor do Gradiente (Fim)</label>
-        <input
-          type="color"
-          name="to"
-          value={gradient.to}
-          onChange={handleGradientChange}
-          className="mt-1 block w-full h-10 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Cor do Texto</label>
-        <input
-          type="color"
-          name="textColor"
-          value={textColor}
-          onChange={handleChange}
-          className="mt-1 block w-full h-10 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Fonte</label>
-        <select
-          name="fontFamily"
-          value={fontFamily}
-          onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        >
-          <option value="sans-serif">Sans-serif</option>
-          <option value="serif">Serif</option>
-          <option value="monospace">Monospace</option>
-        </select>
+      <div className="mt-6">
+        <SkillSelector />
       </div>
     </div>
   );
