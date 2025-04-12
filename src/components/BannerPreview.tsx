@@ -81,7 +81,7 @@ export const BannerPreview: React.FC = () => {
     if (!bannerRef.current) return;
 
     const canvas = await html2canvas(bannerRef.current, {
-      background: 'transparent'
+      background: ''
     });
     const link = document.createElement('a');
     link.download = 'linkedin-banner.png';
@@ -199,11 +199,25 @@ export const BannerPreview: React.FC = () => {
           }}
           onMouseDown={(e) => handleMouseDown(e, 'skills')}
         >
-          <p className={fontFamily === 'serif' ? 'font-serif' : fontFamily === 'monospace' ? 'font-mono' : 'font-sans'}>
-            {skills || 'Habilidades do Usuário'}
-          </p>
+          <div className="flex flex-wrap gap-4">
+            {skills.map((skill: string, index: number) => (
+              <span
+                key={index}
+                className="px-4 py-2 bg-white/10 rounded-full text-sm"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
+
+      <button
+        onClick={handleDownload}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+      >
+        Baixar Banner
+      </button>
     </div>
   );
 };
