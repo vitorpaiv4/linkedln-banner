@@ -203,8 +203,7 @@ export const BannerPreview: React.FC = () => {
 
     try {
       const canvas = await html2canvas(bannerRef.current, {
-        useCORS: true,
-        background: 'transparent'
+        useCORS: true
       });
 
       const link = document.createElement('a');
