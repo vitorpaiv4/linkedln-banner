@@ -1,46 +1,80 @@
-# Getting Started with Create React App
+# Gerador de Banner para LinkedIn
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Um aplicativo web moderno e intuitivo para criar banners personalizados para o seu perfil do LinkedIn. Crie banners profissionais com suas informações de contato e habilidades técnicas de forma fácil e rápida.
 
-## Available Scripts
+🌐 **Acesse o site:** [linkedln-banner.vercel.app](https://linkedln-banner.vercel.app/)
 
-In the project directory, you can run:
+![Banner Preview](./public/preview.png)
 
-### `npm start`
+## ✨ Funcionalidades
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- 🎨 Interface intuitiva de arrastar e soltar
+- 📱 Design responsivo para todos os dispositivos
+- 🛠️ Personalização completa de texto e posicionamento
+- 🔧 Seletor de habilidades técnicas com ícones
+- 💾 Download do banner em alta qualidade
+- 🎯 Guias de alinhamento para posicionamento preciso
+- 🖼️ Personalização do plano de fundo
+- 🎭 Suporte a múltiplas fontes e estilos
+- 📏 Controle preciso de tamanho e posição
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 🚀 Tecnologias Utilizadas
 
-### `npm test`
+- React
+- TypeScript
+- Tailwind CSS
+- html2canvas
+- Vercel (deploy)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠️ Instalação
 
-### `npm run build`
+1. Clone o repositório:
+```bash
+git clone https://github.com/vitorpaiv4/linkedin-banner.git
+cd linkedin-banner
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. Instale as dependências:
+```bash
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Inicie o servidor de desenvolvimento:
+```bash
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+O aplicativo estará disponível em `http://localhost:3000`.
 
-### `npm run eject`
+## 📖 Como Usar
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+1. Acesse o aplicativo através do navegador
+2. Personalize seus dados (nome, cargo, email, GitHub)
+3. Arraste os elementos para posicioná-los
+4. Selecione suas habilidades técnicas
+5. Ajuste o plano de fundo conforme desejado
+6. Clique em "Download" para salvar seu banner
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🤝 Contribuindo
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou enviar um pull request.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+1. Faça um fork do projeto
+2. Crie sua branch de feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
 
-## Learn More
+## 📝 Licença
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 📬 Contato
+
+Se você tiver alguma dúvida ou sugestão, não hesite em entrar em contato:
+
+- GitHub: [@vitorpaiv4](https://github.com/vitorpaiv4)
+- LinkedIn: [Vitor Paiva](https://www.linkedin.com/in/vitor-paiva-programador/)
+
+---
+Desenvolvido com ❤️ por Vitor Paiva

@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { ToolBar } from './ToolBar';
-import { BackgroundControls } from './BackgroundControls';
 import { availableSkills } from '../config/skillsConfig';
 
 export type TextField = 'name' | 'role' | 'email' | 'github' | 'skills';
@@ -15,7 +14,6 @@ export const BannerPreview: React.FC = () => {
   const [isDragging, setIsDragging] = useState<string | null>(null);
   const [isResizing, setIsResizing] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [selectedField, setSelectedField] = useState<string | null>(null);
   const [sizes, setSizes] = useState<Record<string, number>>({
     name: 24,
     role: 18,
@@ -38,7 +36,9 @@ export const BannerPreview: React.FC = () => {
     backgroundColor,
     textColor,
     textFields,
-    setBannerData
+    setBannerData,
+    selectedField,
+    setSelectedField
   } = useBanner();
 
   const getFieldPosition = (id: string) => {
@@ -50,7 +50,8 @@ export const BannerPreview: React.FC = () => {
       bold: false,
       italic: false,
       underline: false,
-      align: 'center' as const
+      align: 'center' as const,
+      fontSize: id === 'name' ? 24 : id === 'role' ? 18 : 16
     };
   };
 
@@ -132,13 +133,105 @@ export const BannerPreview: React.FC = () => {
     checkAlignment(position.x, position.y);
   };
 
-  const handleResizeStart = (field: string, e: React.MouseEvent) => {
+  const handleTouchStart = (field: string, e: React.TouchEvent) => {
+    if (!bannerRef.current) return;
+    
+    const position = getFieldPosition(field);
+    const rect = bannerRef.current.getBoundingClientRect();
+    const touch = e.touches[0];
+    
+    const elementX = (position.x * rect.width) / 100;
+    const elementY = (position.y * rect.height) / 100;
+    
+    setDragOffset({
+      x: touch.clientX - elementX,
+      y: touch.clientY - elementY
+    });
+    
+    setIsDragging(field);
+    setSelectedField(field);
+    checkAlignment(position.x, position.y);
+  };
+
+  const handleSkillTouchStart = (skillId: string, e: React.TouchEvent) => {
+    if (!bannerRef.current) return;
+    
+    const position = getSkillPosition(skillId);
+    const rect = bannerRef.current.getBoundingClientRect();
+    const touch = e.touches[0];
+    
+    const elementX = (position.x * rect.width) / 100;
+    const elementY = (position.y * rect.height) / 100;
+    
+    setDragOffset({
+      x: touch.clientX - elementX,
+      y: touch.clientY - elementY
+    });
+    
+    setIsDragging(skillId);
+    setSelectedField(skillId);
+    checkAlignment(position.x, position.y);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!bannerRef.current) return;
+
+    if (isDragging) {
+      const touch = e.touches[0];
+      const rect = bannerRef.current.getBoundingClientRect();
+      const x = ((touch.clientX - dragOffset.x) / rect.width) * 100;
+      const y = ((touch.clientY - dragOffset.y) / rect.height) * 100;
+
+      const boundedX = Math.max(0, Math.min(100, x));
+      const boundedY = Math.max(0, Math.min(100, y));
+
+      if (isDragging === 'name' || isDragging === 'role' || isDragging === 'email' || isDragging === 'github') {
+        setBannerData({
+          textFields: textFields.map(field => 
+            field.id === isDragging 
+              ? { ...field, x: boundedX, y: boundedY }
+              : field
+          )
+        });
+        checkAlignment(boundedX, boundedY);
+      } else {
+        setSkillPositions(prev => ({
+          ...prev,
+          [isDragging]: { x: boundedX, y: boundedY }
+        }));
+        checkAlignment(boundedX, boundedY);
+      }
+    } else if (isResizing) {
+      const touch = e.touches[0];
+      const movementY = touch.clientY - (e.target as HTMLElement).getBoundingClientRect().top;
+      
+      if (isResizing === 'name' || isResizing === 'role' || isResizing === 'email' || isResizing === 'github') {
+        const currentSize = sizes[isResizing];
+        const newSize = Math.max(12, Math.min(48, currentSize + (movementY * -0.1)));
+        
+        setSizes(prev => ({
+          ...prev,
+          [isResizing]: newSize
+        }));
+      } else {
+        const currentSize = skillSizes[isResizing] || 32;
+        const newSize = Math.max(16, Math.min(64, currentSize + (movementY * -0.1)));
+        
+        setSkillSizes(prev => ({
+          ...prev,
+          [isResizing]: newSize
+        }));
+      }
+    }
+  };
+
+  const handleResizeStart = (field: string, e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
     setIsResizing(field);
     setSelectedField(field);
   };
 
-  const handleSkillResizeStart = (skillId: string, e: React.MouseEvent) => {
+  const handleSkillResizeStart = (skillId: string, e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
     setIsResizing(skillId);
     setSelectedField(skillId);
@@ -215,9 +308,58 @@ export const BannerPreview: React.FC = () => {
     }
   };
 
+  const handleTouchEnd = () => {
+    setIsDragging(null);
+    setIsResizing(null);
+    setGuides([]);
+  };
+
+  const handleFormatUpdate = (field: string, updates: Partial<{ bold: boolean; italic: boolean; underline: boolean; align: 'left' | 'center' | 'right' }>) => {
+    setBannerData({
+      textFields: textFields.map(f => 
+        f.id === field
+          ? { ...f, ...updates }
+          : f
+      )
+    });
+  };
+
+  const getFontFamily = (font: string) => {
+    const fontMap: Record<string, string> = {
+      // Sans-serif
+      'arial': 'Arial, sans-serif',
+      'helvetica': 'Helvetica, Arial, sans-serif',
+      'verdana': 'Verdana, Geneva, sans-serif',
+      'roboto': '"Roboto", sans-serif',
+      'opensans': '"Open Sans", sans-serif',
+      
+      // Serif
+      'times': '"Times New Roman", Times, serif',
+      'georgia': 'Georgia, serif',
+      'garamond': 'Garamond, serif',
+      'merriweather': '"Merriweather", serif',
+      
+      // Display
+      'montserrat': '"Montserrat", sans-serif',
+      'poppins': '"Poppins", sans-serif',
+      'raleway': '"Raleway", sans-serif',
+      'ubuntu': '"Ubuntu", sans-serif',
+      
+      // Monospace
+      'consolas': 'Consolas, monospace',
+      'monaco': 'Monaco, monospace',
+      'firacode': '"Fira Code", monospace',
+    };
+
+    return fontMap[font] || 'Arial, sans-serif';
+  };
+
   const renderField = (field: string, content: React.ReactNode) => {
     const position = getFieldPosition(field);
-    const size = sizes[field];
+    const size = position.fontSize || (
+      field === 'name' ? 24 :
+      field === 'role' ? 18 : 16
+    );
 
     return (
       <div
@@ -233,13 +375,15 @@ export const BannerPreview: React.FC = () => {
           textDecoration: position.underline ? 'underline' : 'none'
         }}
         onMouseDown={(e) => handleMouseDown(field, e)}
+        onTouchStart={(e) => handleTouchStart(field, e)}
       >
         <div className="relative">
           {content}
           {selectedField === field && (
             <div
-              className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 cursor-se-resize"
+              className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 cursor-se-resize touch-none"
               onMouseDown={(e) => handleResizeStart(field, e)}
+              onTouchStart={(e) => handleResizeStart(field, e)}
             />
           )}
         </div>
@@ -263,7 +407,8 @@ export const BannerPreview: React.FC = () => {
           top: `${position.y}%`,
           transform: 'translate(-50%, -50%)'
         }}
-        onMouseDown={(e) => handleSkillMouseDown(skillId, e)}
+        onMouseDown={(e) => handleMouseDown(skillId, e)}
+        onTouchStart={(e) => handleSkillTouchStart(skillId, e)}
       >
         <div className="relative">
           <img
@@ -275,8 +420,9 @@ export const BannerPreview: React.FC = () => {
           />
           {selectedField === skillId && (
             <div
-              className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 cursor-se-resize"
+              className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 cursor-se-resize touch-none"
               onMouseDown={(e) => handleSkillResizeStart(skillId, e)}
+              onTouchStart={(e) => handleSkillResizeStart(skillId, e)}
             />
           )}
         </div>
@@ -286,21 +432,24 @@ export const BannerPreview: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <BackgroundControls />
       <ToolBar />
 
       <div className="flex justify-center">
         <div
           ref={bannerRef}
-          className="w-[1128px] h-[191px] bg-gradient-to-r relative"
+          className="w-full max-w-[1128px] aspect-[1128/191] relative"
           style={{
-            background: `linear-gradient(to right, ${gradient.from}, ${gradient.to})`,
+            background: backgroundType === 'gradient'
+              ? `linear-gradient(to right, ${gradient.from}, ${gradient.to})`
+              : backgroundColor,
             fontFamily,
             color: textColor
           }}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           {/* Linhas de guia */}
           {guides.map((guide, index) => (
@@ -318,37 +467,40 @@ export const BannerPreview: React.FC = () => {
             />
           ))}
 
-          {name && renderField('name', (
-            <h2 className={`font-bold ${fontFamily === 'serif' ? 'font-serif' : fontFamily === 'monospace' ? 'font-mono' : 'font-sans'}`}>
-              {name}
-            </h2>
-          ))}
+          {/* Container para centralizar o conteúdo */}
+          <div className="absolute inset-0 overflow-hidden">
+            {name && renderField('name', (
+              <h2 className="font-bold" style={{ fontFamily: getFontFamily(fontFamily) }}>
+                {name}
+              </h2>
+            ))}
 
-          {role && renderField('role', (
-            <p className={fontFamily === 'serif' ? 'font-serif' : fontFamily === 'monospace' ? 'font-mono' : 'font-sans'}>
-              {role}
-            </p>
-          ))}
+            {role && renderField('role', (
+              <p style={{ fontFamily: getFontFamily(fontFamily) }}>
+                {role}
+              </p>
+            ))}
 
-          {email && renderField('email', (
-            <div className="flex items-center gap-4">
-              <FontAwesomeIcon icon={faEnvelope} className="text-xl" />
-              <span>{email}</span>
-            </div>
-          ))}
+            {email && renderField('email', (
+              <div className="flex items-center gap-4" style={{ fontFamily: getFontFamily(fontFamily) }}>
+                <FontAwesomeIcon icon={faEnvelope} className="text-xl" />
+                <span>{email}</span>
+              </div>
+            ))}
 
-          {github && renderField('github', (
-            <div className="flex items-center gap-4">
-              <FontAwesomeIcon icon={faGithub} className="text-xl" />
-              <span>{github}</span>
-            </div>
-          ))}
+            {github && renderField('github', (
+              <div className="flex items-center gap-4" style={{ fontFamily: getFontFamily(fontFamily) }}>
+                <FontAwesomeIcon icon={faGithub} className="text-xl" />
+                <span>{github}</span>
+              </div>
+            ))}
 
-          {skills && skills.map(skillId => renderSkill(skillId))}
+            {skills && skills.map(skillId => renderSkill(skillId))}
+          </div>
         </div>
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex justify-center mt-4">
         <button
           onClick={handleDownload}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"

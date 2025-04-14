@@ -12,6 +12,7 @@ interface TextFieldPosition {
   italic?: boolean;
   underline?: boolean;
   align?: 'left' | 'center' | 'right';
+  fontSize: number;
 }
 
 interface BannerData {
@@ -36,17 +37,19 @@ interface BannerData {
 }
 
 interface BannerContextType extends BannerData {
+  selectedField: string | null;
   setBannerData: (data: Partial<BannerData>) => void;
+  setSelectedField: (field: string | null) => void;
 }
 
 const BannerContext = createContext<BannerContextType | null>(null);
 
 const initialTextFields = [
-  { id: 'name' as TextField, x: 50, y: 30 },
-  { id: 'role' as TextField, x: 50, y: 45 },
-  { id: 'email' as TextField, x: 50, y: 60 },
-  { id: 'github' as TextField, x: 50, y: 75 },
-  { id: 'skills' as TextField, x: 50, y: 90 }
+  { id: 'name' as TextField, x: 50, y: 30, fontSize: 24 },
+  { id: 'role' as TextField, x: 50, y: 45, fontSize: 18 },
+  { id: 'email' as TextField, x: 50, y: 60, fontSize: 16 },
+  { id: 'github' as TextField, x: 50, y: 75, fontSize: 16 },
+  { id: 'skills' as TextField, x: 50, y: 90, fontSize: 16 }
 ];
 
 const initialTextSizes = {
@@ -77,12 +80,21 @@ export const BannerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     textSizes: initialTextSizes
   });
 
+  const [selectedField, setSelectedField] = useState<string | null>(null);
+
   const updateBannerData = (newData: Partial<BannerData>) => {
     setBannerData(prev => ({ ...prev, ...newData }));
   };
 
   return (
-    <BannerContext.Provider value={{ ...bannerData, setBannerData: updateBannerData }}>
+    <BannerContext.Provider 
+      value={{
+        ...bannerData,
+        selectedField,
+        setBannerData: updateBannerData,
+        setSelectedField
+      }}
+    >
       {children}
     </BannerContext.Provider>
   );
